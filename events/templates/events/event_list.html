@@ -13,7 +13,7 @@
             <div class="card-body">
                 <h5 class="card-title">{{ event.name }}</h5>
                 <p class="card-text">{{ event.description|truncatewords:20 }}</p>
-                <a href="{% url 'checkout' event.id %}" class="btn btn-primary">Buy Ticket - ${{ event.ticket_price }}</a>
+                <a href="{% url 'events:checkout' event.id %}" class="btn btn-primary">Buy Ticket - ${{ event.ticket_price }}</a>
             </div>
         </div>
     </div>

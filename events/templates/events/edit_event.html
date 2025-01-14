@@ -1,0 +1,14 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+<h1>Edit Event: {{ event.name }}</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a href="{% url 'events:organizer_dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

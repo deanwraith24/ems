@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .forms import EventForm
 from .models import Event
@@ -40,3 +40,15 @@ def remove_event(request):
         return redirect('events:organizer_dashboard')
     events = Event.objects.all()
     return render(request, 'events/remove_event.html', {'events': events})
+
+def edit_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    if request.method == 'POST':
+        form = EventForm(request.POST, request.FILES, instance=event)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Event updated successfully!')
+            return redirect('events:organizer_dashboard')
+    else:
+        form = EventForm(instance=event)
+    return render(request, 'events/edit_event.html', {'form': form, 'event': event})
