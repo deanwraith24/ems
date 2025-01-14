@@ -1,0 +1,37 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+<h1>Remove Events</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <p>Select the events you want to remove:</p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <td><input type="checkbox" name="event_ids" value="{{ event.id }}"></td>
+                <td>{{ event.name }}</td>
+                <td>{{ event.date }}</td>
+                <td>{{ event.location }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-danger">Remove Selected Events</button>
+        <a href="{% url 'events:organizer_dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}
+
