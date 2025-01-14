@@ -1,0 +1,9 @@
+{% extends 'events/base.html' %}
+
+{% block title %}Payment Success{% endblock %}
+
+{% block content %}
+<h1>Payment Successful!</h1>
+<p>Your ticket has been purchased. You can now attend the event.</p>
+<a href="{% url 'event_list' %}" class="btn btn-primary">Go to Events</a>
+{% endblock %}

@@ -45,6 +45,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'events',
+    'users',
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'event_management.urls'
@@ -62,8 +70,10 @@ ROOT_URLCONF = 'event_management.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [
+            BASE_DIR / 'templates',  # Ensure this line is included for global templates if needed
+        ],
+        'APP_DIRS': True,  # This should be True to allow Django to search in app-specific templates
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -75,8 +85,22 @@ TEMPLATES = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+SITE_ID = 1
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATED_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/'
+
 WSGI_APPLICATION = 'event_management.wsgi.application'
 
+STRIPE_TEST_PUBLIC_KEY = 'pk_test_51Qh9pYDWDnPFZKbeVhsEqG1Bdkrvd8Q2kdt2SBNEQLLBepBjUn1Djm4JvbCk64KXya23sNRbcr8KqL6rSnM7DIT900msNUTjZl'
+STRIPE_TEST_SECRET_KEY = 'sk_test_51Qh9pYDWDnPFZKbebEWgv0fYNhnUSX76aLhdWoPuraEnK0FZtZgpmATixNa6WFkXtmPMgLbnl5IJ2hgbLPXDzk4I00TLF8defe'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

@@ -1,0 +1,23 @@
+{% extends 'events/base.html' %}
+
+{% block title %}Organizer Dashboard{% endblock %}
+
+{% block content %}
+<h1>Your Events</h1>
+
+{% if events %}
+<ul>
+    {% for event in events %}
+    <li>
+        <h4>{{ event.name }}</h4>
+        <p>Date: {{ event.date }}</p>
+        <p>Tickets Sold: {{ event.ticket_sales.count }}</p>
+        <a href="{% url 'event_list' %}" class="btn btn-info">View Event</a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>You haven't created any events yet.</p>
+{% endif %}
+
+{% endblock %}

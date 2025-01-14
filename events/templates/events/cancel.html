@@ -1,0 +1,9 @@
+{% extends 'events/base.html' %}
+
+{% block title %}Payment Canceled{% endblock %}
+
+{% block content %}
+<h1>Payment Canceled</h1>
+<p>Your payment was not successful. Please try again.</p>
+<a href="{% url 'event_list' %}" class="btn btn-primary">Go Back to Events</a>
+{% endblock %}
