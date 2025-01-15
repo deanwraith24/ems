@@ -1,0 +1,105 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Open+Sans:wght@400;600&display=swap');
+
+/* Global Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Open Sans', sans-serif;
+    background-color: #cc5500; /* Burnt Orange Background */
+    color: #ffffff; /* White text for readability */
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fredoka', sans-serif;
+    margin-bottom: 0.5em;
+    color: #fefae0; /* Light Cream for Headings */
+}
+
+a {
+    color: #ffddcc;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Card Styles */
+.card {
+    background: #ff6f3c; /* Lighter Burnt Orange for contrast */
+    border: 1px solid #fefae0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card img {
+    width: 100%;
+    border-bottom: 1px solid #fefae0;
+}
+
+.card-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.5rem;
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #fefae0;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #fefae0;
+    color: #cc5500;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #ffffff;
+    color: #cc5500;
+    cursor: pointer;
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: #441c0c; /* Darker Burnt Orange */
+    color: #ffffff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar a {
+    color: #ffffff;
+    margin: 0 10px;
+}
+
+.navbar a:hover {
+    color: #fefae0;
+}
+
+/* Footer Styles */
+footer {
+    background: #441c0c;
+    color: #fefae0;
+    text-align: center;
+    padding: 10px;
+    margin-top: 20px;
+}
