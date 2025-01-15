@@ -29,10 +29,14 @@ SECRET_KEY = 'django-insecure-5niyuajrnv**65k+4iaji7(e$@6-to#$*!c#b9z-4il$bi7fcv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['8000-deanwraith24-ems-snk68f4z1pp.ws.codeinstitute-ide.net']
+ALLOWED_HOSTS = [
+    '8000-deanwraith24-ems-7632b9ttr49.ws.codeinstitute-ide.net',
+    'localhost',
+    '127.0.0.1',
+]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://8000-deanwraith24-ems-snk68f4z1pp.ws.codeinstitute-ide.net',
+    'https://8000-deanwraith24-ems-7632b9ttr49.ws.codeinstitute-ide.net',
 ]
 
 
@@ -45,10 +49,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'cloudinary',
     'events',
     'users',
     'payments',

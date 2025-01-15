@@ -1,0 +1,17 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Checkout</h1>
+    <div class="card p-4">
+        <h3 class="card-title">Event: {{ event.name }}</h3>
+        <p class="card-text">Price: ${{ event.ticket_price }}</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Pay Now</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

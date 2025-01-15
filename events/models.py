@@ -1,10 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
+from cloudinary.models import CloudinaryField
 
 class Event(models.Model):
     title = models.CharField(max_length=200, default='')
     name = models.CharField(max_length=200, default='')
-    image = models.ImageField(upload_to='event_images/', blank=True, null=True)
+    image = CloudinaryField('image', blank=True, null=True)
     description = models.TextField()
     date = models.DateField(default='')
     time = models.TimeField(null=True, blank=True)

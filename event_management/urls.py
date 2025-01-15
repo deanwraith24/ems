@@ -24,5 +24,6 @@ urlpatterns = [
     path('create/', event_views.create_event, name='create_event'),
     path('events/', event_views.event_list, name='event_list'),
     path('', event_views.home, name='home'),  # Add this line for the root URL
-    path('events/', include('events.urls')),  # Include events URLs with the namespace
+    path('events/', include('events.urls', namespace='events')),  # Add namespace here
+    path('payments/', include('payments.urls', namespace='payments')),  # Add namespace
 ]
