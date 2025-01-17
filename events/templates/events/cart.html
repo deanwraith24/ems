@@ -19,7 +19,7 @@
         <tbody>
             {% for item in cart_items %}
             <tr>
-                <td>{{ item.event.title }}</td>
+                <td>{{ item.event.name }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>${{ item.event.ticket_price }}</td>
                 <td>${{ item.total_price }}</td>
@@ -40,7 +40,7 @@
         </tbody>
     </table>
     <div class="text-right">
-        <p><strong>Total: ${{ total_cart_value }}</strong></p>
+        <p><strong>Total: ${{ cart_total_value }}</strong></p>
         <a href="{% url 'events:checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
         <form method="post" action="{% url 'events:clear_cart' %}" class="d-inline">
             {% csrf_token %}

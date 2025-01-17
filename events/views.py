@@ -96,19 +96,20 @@ def purchase_tickets(request, event_id):
 @login_required
 def add_to_cart(request, event_id):
     """
-    Add tickets for an event to the cart and stay on the event page.
+    Add tickets for an event to the cart and return a JSON response.
     """
-    event = get_object_or_404(Event, id=event_id)
-    quantity = int(request.POST.get('quantity', 1))
+    if request.method == "POST":
+        event = get_object_or_404(Event, id=event_id)
+        quantity = int(request.POST.get('quantity', 1))
 
-    # Check if the cart already has this event
-    cart_item, created = Cart.objects.get_or_create(user=request.user, event=event)
-    if not created:
-        cart_item.quantity += quantity
-    cart_item.save()
+        # Check if the cart already has this event
+        cart_item, created = Cart.objects.get_or_create(user=request.user, event=event)
+        if not created:
+            cart_item.quantity += quantity
+        cart_item.save()
 
-    # Respond with success without redirecting
-    return JsonResponse({"success": True, "message": "Tickets added to cart!"})
+        return JsonResponse({'success': True, 'message': 'Tickets added to cart!'})
+    return JsonResponse({'success': False, 'message': 'Invalid request.'})
 
 @login_required
 def view_cart(request):

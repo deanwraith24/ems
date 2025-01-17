@@ -42,3 +42,50 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Function to display a success message as a popup
+function showPopupMessage(message) {
+    // Create a popup div
+    const popup = document.createElement('div');
+    popup.className = 'popup-message alert alert-success';
+    popup.innerText = message;
+
+    // Add the popup to the body
+    document.body.appendChild(popup);
+
+    // Remove the popup after 3 seconds
+    setTimeout(() => {
+        popup.remove();
+    }, 3000);
+}
+
+// Event listener for forms submitting to add to cart
+document.querySelectorAll('.add-to-cart-form').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Get the form data
+        const formData = new FormData(form);
+
+        // Send the POST request via fetch
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    // Show popup message
+                    showPopupMessage(data.message);
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch((error) => {
+                console.error('Error adding to cart:', error);
+            });
+    });
+});
