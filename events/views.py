@@ -3,7 +3,7 @@ from django.contrib import messages
 from .forms import EventForm
 from django.contrib.auth.decorators import login_required
 from .models import Event, Cart
-
+from django.http import JsonResponse
 
 def landing_page(request):
     """
@@ -93,11 +93,10 @@ def purchase_tickets(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     return render(request, 'events/purchase_tickets.html', {'events': [event]})
 
-
 @login_required
 def add_to_cart(request, event_id):
     """
-    Add tickets for an event to the cart.
+    Add tickets for an event to the cart and stay on the event page.
     """
     event = get_object_or_404(Event, id=event_id)
     quantity = int(request.POST.get('quantity', 1))
@@ -108,18 +107,16 @@ def add_to_cart(request, event_id):
         cart_item.quantity += quantity
     cart_item.save()
 
-    messages.success(request, 'Tickets added to cart!')
-    return redirect('events:cart')
-
+    # Respond with success without redirecting
+    return JsonResponse({"success": True, "message": "Tickets added to cart!"})
 
 @login_required
 def view_cart(request):
     """
     View the user's shopping cart.
     """
-    cart_items = Cart.objects.filter(user=request.user)
+    cart_items = Cart.objects.filter(user=request.user).select_related('event')
     return render(request, 'events/cart.html', {'cart_items': cart_items})
-
 
 @login_required
 def checkout(request):
@@ -130,3 +127,25 @@ def checkout(request):
     total = sum(item.total_price() for item in cart_items)
     # Add payment logic here
     return render(request, 'events/checkout.html', {'cart_items': cart_items, 'total': total})
+
+@login_required
+def decrease_quantity(request, item_id):
+    cart_item = get_object_or_404(Cart, id=item_id, user=request.user)
+    cart_item.quantity -= 1
+    if cart_item.quantity <= 0:
+        cart_item.delete()
+    else:
+        cart_item.save()
+    return redirect('events:cart')
+
+@login_required
+def increase_quantity(request, item_id):
+    cart_item = get_object_or_404(Cart, id=item_id, user=request.user)
+    cart_item.quantity += 1
+    cart_item.save()
+    return redirect('events:cart')
+
+@login_required
+def clear_cart(request):
+    Cart.objects.filter(user=request.user).delete()
+    return redirect('events:cart')
