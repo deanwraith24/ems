@@ -1,0 +1,28 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+<h1>Purchase Tickets</h1>
+<div class="row">
+    {% for event in events %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ event.name }}</h5>
+                <p class="card-text">{{ event.description }}</p>
+                <p><strong>Price:</strong> ${{ event.ticket_price }}</p>
+                <p><strong>Tickets Available:</strong> {{ event.tickets_available }}</p>
+                <form method="post" action="{% url 'events:add_to_cart' event.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" name="quantity" id="quantity" min="1" max="{{ event.tickets_available }}" value="1" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

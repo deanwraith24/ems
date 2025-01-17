@@ -1,0 +1,14 @@
+{% extends 'events/base.html' %}
+
+{% block title %}
+Landing Page
+{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1>Welcome to the Event Management System!</h1>
+    <p>Discover and buy tickets for amazing events near you.</p>
+    <a href="{% url 'events:event_list' %}" class="btn btn-primary">Explore Events</a>
+</div>
+{% endblock %}
+

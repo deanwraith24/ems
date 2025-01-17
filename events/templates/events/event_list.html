@@ -1,22 +1,20 @@
 {% extends 'events/base.html' %}
 
-{% block title %}Event List{% endblock %}
-
 {% block content %}
-<h1>Upcoming Events</h1>
-
+<h1>Explore Events</h1>
 <div class="row">
     {% for event in events %}
-    <div class="col-md-4">
-        <div class="card mb-4">
+    <div class="col-md-4 mb-4">
+        <div class="card">
             <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.name }}">
             <div class="card-body">
                 <h5 class="card-title">{{ event.name }}</h5>
-                <p class="card-text">{{ event.description|truncatewords:20 }}</p>
-                <a href="{% url 'payments:checkout' event.id %}" class="btn btn-primary">Buy Ticket - ${{ event.ticket_price }}</a>
+                <p class="card-text">{{ event.description }}</p>
+                <a href="{% url 'events:purchase_tickets' event.id %}" class="btn btn-primary">Buy Tickets</a>
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
 {% endblock %}
+
