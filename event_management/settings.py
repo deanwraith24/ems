@@ -73,7 +73,10 @@ ROOT_URLCONF = 'event_management.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "users/templates"],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'events', 'templates'),  # App-specific templates
+            os.path.join(BASE_DIR, 'users', 'templates'),  # User-specific templates
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

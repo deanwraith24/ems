@@ -1,5 +1,6 @@
 from django.urls import path
 from django.views.generic import TemplateView
+from django.contrib.auth.views import LogoutView
 from . import views
 
 urlpatterns = [
@@ -13,5 +14,5 @@ urlpatterns = [
     path('login/', TemplateView.as_view(template_name="users/login.html"), name='login'),
 
     # Logout Page
-    path('logout/', TemplateView.as_view(template_name="users/logout.html"), name='logout'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]
