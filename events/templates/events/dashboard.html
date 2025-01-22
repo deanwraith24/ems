@@ -1,0 +1,9 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Event Dashboard{% endblock %}
+
+{% block content %}
+<h1>Your Event Dashboard</h1>
+<p>Manage your events here.</p>
+<a href="{% url 'redirect_page' %}" class="btn">Back</a>
+{% endblock %}

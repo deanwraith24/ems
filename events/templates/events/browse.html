@@ -1,0 +1,9 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Browse Events{% endblock %}
+
+{% block content %}
+<h1>Browse Events</h1>
+<p>Explore available events here.</p>
+<a href="{% url 'redirect_page' %}" class="btn">Back</a>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Choose Action{% endblock %}
+
+{% block content %}
+<h1>Welcome, {{ user.username }}</h1>
+<p>What would you like to do?</p>
+<div class="actions">
+    <a href="{% url 'event_dashboard' %}" class="btn">Event Dashboard</a>
+    <a href="{% url 'event_browsing' %}" class="btn">Browse Events</a>
+</div>
+{% endblock %}
