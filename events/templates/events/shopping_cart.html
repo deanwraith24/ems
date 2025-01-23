@@ -1,0 +1,12 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Your Shopping Cart</h1>
+    <ul>
+        {% for item, event in cart_with_events %}
+            <a href="{% url 'checkout' event.name %}">Proceed to Checkout for {{ event.name }}</a>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

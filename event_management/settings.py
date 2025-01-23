@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'cloudinary',
     'users',
     'events',
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -115,6 +116,8 @@ LOGOUT_REDIRECT_URL = '/'  # After logging out
 
 WSGI_APPLICATION = 'event_management.wsgi.application'
 
+STRIPE_TEST_PUBLIC_KEY = 'pk_test_51Qh9pYDWDnPFZKbeVhsEqG1Bdkrvd8Q2kdt2SBNEQLLBepBjUn1Djm4JvbCk64KXya23sNRbcr8KqL6rSnM7DIT900msNUTjZl'
+STRIPE_TEST_SECRET_KEY = 'sk_test_51Qh9pYDWDnPFZKbebEWgv0fYNhnUSX76aLhdWoPuraEnK0FZtZgpmATixNa6WFkXtmPMgLbnl5IJ2hgbLPXDzk4I00TLF8defe'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -164,7 +167,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

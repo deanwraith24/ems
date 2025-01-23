@@ -3,7 +3,23 @@
 {% block title %}Browse Events{% endblock %}
 
 {% block content %}
-<h1>Browse Events</h1>
-<p>Explore available events here.</p>
-<a href="{% url 'redirect_page' %}" class="btn">Back</a>
+<h1 class="text-center mb-4">Browse Events</h1>
+<div class="row">
+    {% for event in events %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            {% if event.image %}
+            <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.name }}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ event.name }}</h5>
+                <p class="card-text">{{ event.description|truncatechars:100 }}</p>
+                <p><strong>Date:</strong> {{ event.date }}</p>
+                <p><strong>Time:</strong> {{ event.time }}</p>
+                <a href="{% url 'event_detail' event.id %}" class="btn btn-custom">View Event</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}

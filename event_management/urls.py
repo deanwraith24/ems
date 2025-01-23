@@ -22,4 +22,5 @@ urlpatterns = [
     path('events/', include('events.urls')),  # Include events app URLs
     path('', include('users.urls')),  # Landing page
     path('accounts/', include('allauth.urls')),
+    path('payments/', include('payments.urls')),
 ]
