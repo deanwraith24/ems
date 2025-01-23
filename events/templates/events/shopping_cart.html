@@ -3,10 +3,109 @@
 {% block content %}
 <div class="container mt-5">
     <h1>Your Shopping Cart</h1>
-    <ul>
-        {% for item, event in cart_with_events %}
-            <a href="{% url 'checkout' event.name %}">Proceed to Checkout for {{ event.name }}</a>
-        {% endfor %}
-    </ul>
+    {% if cart_with_events %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item, event in cart_with_events %}
+                <tr id="cart-row-{{ item.id }}">
+                    <td>{{ event.name }}</td>
+                    <td>
+                        <form id="update-form-{{ item.id }}" method="POST" action="{% url 'update_cart' item.id %}">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" id="quantity-{{ item.id }}" value="{{ item.quantity }}" min="1" max="{{ event.ticket_quantity }}" required>
+                            <button type="button" class="btn btn-primary btn-sm update-btn" data-cart-item-id="{{ item.id }}">Update</button>
+                        </form>
+                    </td>
+                    <td>$<span id="item-total-{{ item.id }}">{{ item.total_price }}</span></td>
+                    <td>
+                        <form method="POST" action="{% url 'remove_from_cart' item.id %}" id="remove-form-{{ item.id }}">
+                            {% csrf_token %}
+                            <button type="button" class="btn btn-danger btn-sm remove-btn" data-cart-item-id="{{ item.id }}">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-4 text-right">
+            <h4>Total: $<span id="total-cart-value">{{ total_value }}</span></h4>
+            <a href="{% url 'checkout' %}" class="btn btn-success btn-lg">Checkout</a>
+        </div>
+    {% else %}
+        <p>Your cart is empty. <a href="{% url 'browse_events' %}">Browse events</a> to add tickets.</p>
+    {% endif %}
 </div>
+
+<script>
+    // Handle quantity updates
+document.querySelectorAll('.update-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const cartItemId = this.dataset.cartItemId;
+        const quantityInput = document.getElementById(`quantity-${cartItemId}`);
+        const newQuantity = quantityInput.value;
+
+        fetch(`/events/update-cart/${cartItemId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ quantity: newQuantity })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update item total and cart total dynamically
+                document.getElementById(`item-total-${cartItemId}`).textContent = data.item_total;
+                document.getElementById('total-cart-value').textContent = data.total_value;
+            } else {
+                alert(data.error || "Failed to update the cart.");
+            }
+        });
+    });
+});
+
+
+    // Handle item removal
+document.querySelectorAll('.remove-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const cartItemId = this.dataset.cartItemId;
+
+        fetch(`/events/remove-from-cart/${cartItemId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove the item's row from the table
+                const row = document.getElementById(`cart-row-${cartItemId}`);
+                if (row) row.remove();
+
+                // Update the total value
+                document.getElementById('total-cart-value').textContent = data.total_value;
+
+                // If the cart is empty, show the empty cart message
+                if (data.total_value === "0.00") {
+                    document.querySelector('.container').innerHTML = `
+                        <p>Your cart is empty. <a href="{% url 'browse_events' %}">Browse events</a> to add tickets.</p>
+                    `;
+                }
+            } else {
+                alert(data.error || "Failed to remove the item.");
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

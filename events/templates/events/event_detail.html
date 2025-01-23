@@ -33,7 +33,7 @@
     <!-- Ticket Purchase Section -->
     <div class="ticket-section">
         <h2>Purchase Tickets</h2>
-        <form id="ticket-form" method="post">
+        <form id="ticket-form" method="post" action="{% url 'add_to_cart' event.id %}">
             {% csrf_token %}
             <div class="mb-3">
                 <label for="ticket-quantity" class="form-label">Number of Tickets:</label>
@@ -41,7 +41,7 @@
             </div>
             <p><strong>Total Cost:</strong> $<span id="total-cost">{{ event.ticket_price }}</span></p>
             <button type="submit" class="btn btn-custom">Add to Cart</button>
-        </form>
+        </form>        
     </div>
 </div>
 

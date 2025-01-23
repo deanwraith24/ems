@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import ShoppingCart, Event
 from .forms import EventForm
 from django.contrib import messages
+from django.http import JsonResponse
 
 @login_required
 def redirect_page(request):
@@ -57,45 +58,103 @@ def event_detail(request, event_id):
 def shopping_cart(request):
     return render(request, 'events/shopping_cart.html')
 
+# Add to Cart
 def add_to_cart(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     if request.method == 'POST':
-        quantity = int(request.POST.get('quantity', 1))
-        total_price = event.ticket_price * quantity
-        
-        # Check if the user already has this event in their cart
-        cart_item, created = ShoppingCart.objects.get_or_create(
-            user=request.user, event=event,
-            defaults={'quantity': quantity, 'total_price': total_price}
-        )
-        
-        # If the item already exists, update the quantity and total_price
-        if not created:
-            cart_item.quantity += quantity
-            cart_item.total_price = cart_item.quantity * event.ticket_price
-            cart_item.save()
-        
-        # Show success message
-        messages.success(request, "Congratulations, tickets added to your cart!")
-        
-        # Redirect to cart page or stay on the same page
-        return redirect('event_detail', event_id=event.id)
+        try:
+            quantity = int(request.POST.get('quantity', 1))
+            if quantity < 1 or quantity > event.ticket_quantity:
+                messages.error(request, "Invalid ticket quantity.")
+                return redirect('event_detail', event_id=event.id)
 
+            total_price = event.ticket_price * quantity
+
+            # Create or update cart item
+            cart_item, created = ShoppingCart.objects.get_or_create(
+                user=request.user, event=event,
+                defaults={'quantity': quantity, 'total_price': total_price}
+            )
+
+            if not created:
+                # Update existing item
+                cart_item.quantity += quantity
+                if cart_item.quantity > event.ticket_quantity:
+                    messages.error(request, "Not enough tickets available.")
+                    return redirect('event_detail', event_id=event.id)
+                cart_item.total_price = cart_item.quantity * event.ticket_price
+                cart_item.save()
+
+            messages.success(request, f"{quantity} tickets added to your cart!")
+        except ValueError:
+            messages.error(request, "Invalid input.")
+        return redirect('event_detail', event_id=event.id)
     return redirect('events:browse_events')
 
+# Update Cart (Update ticket quantity)
+def update_cart(request, item_id):
+    if request.method == "POST":
+        try:
+            cart_item = ShoppingCart.objects.get(id=item_id, user=request.user)
+            data = json.loads(request.body)
+            new_quantity = data.get("quantity")
+
+            if new_quantity is not None and int(new_quantity) > 0:
+                cart_item.quantity = int(new_quantity)
+                cart_item.save()
+
+                # Recalculate the item's total and the cart total
+                item_total = cart_item.quantity * cart_item.event.ticket_price
+                cart_total = sum(item.quantity * item.event.ticket_price for item in CartItem.objects.filter(user=request.user))
+
+                return JsonResponse({
+                    "success": True,
+                    "item_total": f"{item_total:.2f}",
+                    "total_value": f"{cart_total:.2f}",
+                })
+            else:
+                # If quantity is 0 or invalid, return an error
+                return JsonResponse({"success": False, "error": "Invalid quantity."})
+        except CartItem.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Cart item not found."})
+    return JsonResponse({"success": False, "error": "Invalid request method."})
+
+# Remove from Cart
+def remove_from_cart(request, item_id):
+    if request.method == "POST":
+        try:
+            cart_item = ShoppingCart.objects.get(id=item_id, user=request.user)
+            cart_item.delete()
+
+            # Recalculate the cart total
+            cart_total = sum(item.quantity * item.event.ticket_price for item in CartItem.objects.filter(user=request.user))
+
+            return JsonResponse({
+                "success": True,
+                "total_value": f"{cart_total:.2f}",
+            })
+        except CartItem.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Cart item not found."})
+    return JsonResponse({"success": False, "error": "Invalid request method."})
+
+# View Cart
 def view_cart(request):
     if not request.user.is_authenticated:
         return redirect('login')  # Ensure user is logged in
 
     cart_items = ShoppingCart.objects.filter(user=request.user)
+    if not cart_items.exists():
+        messages.info(request, "Your cart is empty.")
+        return render(request, 'events/shopping_cart.html', {'cart_with_events': []})
+
     cart_with_events = []
-
+    total_value = 0
     for item in cart_items:
-        event = get_object_or_404(Event, id=item.event_id)  # Ensure you're getting the correct event
-        if event:  # Make sure event exists and has an ID
-            cart_with_events.append((item, event))
-        else:
-            # Handle case where event is not found (optional)
-            print(f"Event with ID {item.event_id} not found")
+        event = item.event
+        cart_with_events.append((item, event))
+        total_value += item.total_price
 
-    return render(request, 'events/shopping_cart.html', {'cart_with_events': cart_with_events})
+    return render(request, 'events/shopping_cart.html', {
+        'cart_with_events': cart_with_events,
+        'total_value': total_value
+    })
