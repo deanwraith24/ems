@@ -4,6 +4,7 @@ from .models import ShoppingCart, Event
 from .forms import EventForm
 from django.contrib import messages
 from django.http import JsonResponse
+import json
 
 @login_required
 def redirect_page(request):
@@ -92,48 +93,49 @@ def add_to_cart(request, event_id):
     return redirect('events:browse_events')
 
 # Update Cart (Update ticket quantity)
-def update_cart(request, item_id):
+def update_cart(request, cart_item_id):
     if request.method == "POST":
         try:
-            cart_item = ShoppingCart.objects.get(id=item_id, user=request.user)
+            cart_item = ShoppingCart.objects.get(id=cart_item_id)
             data = json.loads(request.body)
-            new_quantity = data.get("quantity")
+            new_quantity = int(data.get("quantity"))
 
-            if new_quantity is not None and int(new_quantity) > 0:
-                cart_item.quantity = int(new_quantity)
+            if new_quantity > 0:
+                cart_item.quantity = new_quantity
                 cart_item.save()
 
-                # Recalculate the item's total and the cart total
                 item_total = cart_item.quantity * cart_item.event.ticket_price
-                cart_total = sum(item.quantity * item.event.ticket_price for item in CartItem.objects.filter(user=request.user))
+                cart_total = sum(
+                    item.quantity * item.event.ticket_price for item in ShoppingCart.objects.filter(user=request.user)
+                )
 
                 return JsonResponse({
                     "success": True,
                     "item_total": f"{item_total:.2f}",
-                    "total_value": f"{cart_total:.2f}",
+                    "total_value": f"{cart_total:.2f}"
                 })
             else:
-                # If quantity is 0 or invalid, return an error
                 return JsonResponse({"success": False, "error": "Invalid quantity."})
-        except CartItem.DoesNotExist:
+        except ShoppingCart.DoesNotExist:
             return JsonResponse({"success": False, "error": "Cart item not found."})
     return JsonResponse({"success": False, "error": "Invalid request method."})
 
 # Remove from Cart
-def remove_from_cart(request, item_id):
+def remove_from_cart(request, cart_item_id):
     if request.method == "POST":
         try:
-            cart_item = ShoppingCart.objects.get(id=item_id, user=request.user)
+            cart_item = ShoppingCart.objects.get(id=cart_item_id)
             cart_item.delete()
 
-            # Recalculate the cart total
-            cart_total = sum(item.quantity * item.event.ticket_price for item in CartItem.objects.filter(user=request.user))
+            cart_total = sum(
+                item.quantity * item.event.ticket_price for item in ShoppingCart.objects.filter(user=request.user)
+            )
 
             return JsonResponse({
                 "success": True,
-                "total_value": f"{cart_total:.2f}",
+                "total_value": f"{cart_total:.2f}"
             })
-        except CartItem.DoesNotExist:
+        except ShoppingCart.DoesNotExist:
             return JsonResponse({"success": False, "error": "Cart item not found."})
     return JsonResponse({"success": False, "error": "Invalid request method."})
 

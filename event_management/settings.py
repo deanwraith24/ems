@@ -79,6 +79,7 @@ TEMPLATES = [
         'DIRS': [
             os.path.join(BASE_DIR, 'events', 'templates'),  # App-specific templates
             os.path.join(BASE_DIR, 'users', 'templates'),  # User-specific templates
+            os.path.join(BASE_DIR, 'payments', 'templates'),  # User-specific templates
         ],
         'APP_DIRS': True,
         'OPTIONS': {

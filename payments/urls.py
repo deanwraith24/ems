@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
-    path('payment/success/', views.payment_success, name='payment_success'),
-    path('payment/cancel/', views.payment_cancel, name='payment_cancel'),
+    path('stripe-payment/', views.stripe_payment, name='stripe_payment'),
+    path('success/', views.success, name='success'),  # Success page route
+    path('cancel/', views.cancel, name='cancel'),    # Cancel page route
 ]

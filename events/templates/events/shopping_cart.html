@@ -18,18 +18,31 @@
                 <tr id="cart-row-{{ item.id }}">
                     <td>{{ event.name }}</td>
                     <td>
-                        <form id="update-form-{{ item.id }}" method="POST" action="{% url 'update_cart' item.id %}">
-                            {% csrf_token %}
-                            <input type="number" name="quantity" id="quantity-{{ item.id }}" value="{{ item.quantity }}" min="1" max="{{ event.ticket_quantity }}" required>
-                            <button type="button" class="btn btn-primary btn-sm update-btn" data-cart-item-id="{{ item.id }}">Update</button>
-                        </form>
+                        <input 
+                            type="number" 
+                            id="quantity-{{ item.id }}" 
+                            value="{{ item.quantity }}" 
+                            min="1" 
+                            max="{{ event.ticket_quantity }}" 
+                            class="form-control d-inline-block" 
+                            style="width: 70px;"
+                        >
+                        <button 
+                            class="btn btn-primary btn-sm update-btn" 
+                            data-cart-item-id="{{ item.id }}"
+                        >
+                            Update
+                        </button>
+                        <div class="feedback feedback-{{ item.id }} text-danger mt-1" style="display: none;"></div>
                     </td>
                     <td>$<span id="item-total-{{ item.id }}">{{ item.total_price }}</span></td>
                     <td>
-                        <form method="POST" action="{% url 'remove_from_cart' item.id %}" id="remove-form-{{ item.id }}">
-                            {% csrf_token %}
-                            <button type="button" class="btn btn-danger btn-sm remove-btn" data-cart-item-id="{{ item.id }}">Remove</button>
-                        </form>
+                        <button 
+                            class="btn btn-danger btn-sm remove-btn" 
+                            data-cart-item-id="{{ item.id }}"
+                        >
+                            Remove
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -45,65 +58,92 @@
 </div>
 
 <script>
-    // Handle quantity updates
-document.querySelectorAll('.update-btn').forEach(button => {
-    button.addEventListener('click', function () {
-        const cartItemId = this.dataset.cartItemId;
-        const quantityInput = document.getElementById(`quantity-${cartItemId}`);
-        const newQuantity = quantityInput.value;
+document.addEventListener('DOMContentLoaded', function () {
+    // Update ticket quantity in the cart
+    document.querySelectorAll('.update-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const cartItemId = this.getAttribute('data-cart-item-id');
+            const quantityInput = document.getElementById(`quantity-${cartItemId}`);
+            const newQuantity = quantityInput.value;
+            const feedback = document.querySelector(`.feedback-${cartItemId}`);
 
-        fetch(`/events/update-cart/${cartItemId}/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({ quantity: newQuantity })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update item total and cart total dynamically
-                document.getElementById(`item-total-${cartItemId}`).textContent = data.item_total;
-                document.getElementById('total-cart-value').textContent = data.total_value;
-            } else {
-                alert(data.error || "Failed to update the cart.");
-            }
+            // Disable the button to prevent duplicate requests
+            button.disabled = true;
+
+            fetch(`/events/update-cart/${cartItemId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ quantity: newQuantity })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the total for the item and cart dynamically
+                    document.getElementById(`item-total-${cartItemId}`).textContent = `${data.item_total}`;
+                    document.getElementById('total-cart-value').textContent = `${data.total_value}`;
+                    feedback.style.display = 'none'; // Clear any previous error feedback
+                } else {
+                    feedback.textContent = data.error || "Failed to update the cart.";
+                    feedback.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error("Error updating cart:", error);
+                feedback.textContent = "Network error. Please try again.";
+                feedback.style.display = 'block';
+            })
+            .finally(() => {
+                // Re-enable the button
+                button.disabled = false;
+            });
         });
     });
-});
 
+    // Remove item from the cart
+    document.querySelectorAll('.remove-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const cartItemId = this.getAttribute('data-cart-item-id');
 
-    // Handle item removal
-document.querySelectorAll('.remove-btn').forEach(button => {
-    button.addEventListener('click', function () {
-        const cartItemId = this.dataset.cartItemId;
+            // Disable the button to prevent duplicate requests
+            button.disabled = true;
 
-        fetch(`/events/remove-from-cart/${cartItemId}/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Remove the item's row from the table
-                const row = document.getElementById(`cart-row-${cartItemId}`);
-                if (row) row.remove();
-
-                // Update the total value
-                document.getElementById('total-cart-value').textContent = data.total_value;
-
-                // If the cart is empty, show the empty cart message
-                if (data.total_value === "0.00") {
-                    document.querySelector('.container').innerHTML = `
-                        <p>Your cart is empty. <a href="{% url 'browse_events' %}">Browse events</a> to add tickets.</p>
-                    `;
+            fetch(`/events/remove-from-cart/${cartItemId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
                 }
-            } else {
-                alert(data.error || "Failed to remove the item.");
-            }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the item's row from the cart
+                    const row = document.getElementById(`cart-row-${cartItemId}`);
+                    if (row) row.remove();
+
+                    // Update the total value in the cart
+                    document.getElementById('total-cart-value').textContent = `${data.total_value}`;
+
+                    // Show the empty cart message if no items are left
+                    if (data.total_value === "0.00") {
+                        document.querySelector('.container').innerHTML = `
+                            <p>Your cart is empty. <a href="{% url 'browse_events' %}">Browse events</a> to add tickets.</p>
+                        `;
+                    }
+                } else {
+                    alert(data.error || "Failed to remove the item.");
+                }
+            })
+            .catch(error => {
+                console.error("Error removing item from cart:", error);
+                alert("Network error. Please try again.");
+            })
+            .finally(() => {
+                // Re-enable the button
+                button.disabled = false;
+            });
         });
     });
 });

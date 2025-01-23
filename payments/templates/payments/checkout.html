@@ -1,11 +1,38 @@
-{% extends 'base.html' %}
+{% extends 'users/base.html' %}
 
 {% block content %}
-<h2>Checkout for {{ event.name }}</h2>
-<form method="POST">
-    {% csrf_token %}
-    <label for="quantity">Quantity:</label>
-    <input type="number" name="quantity" value="1" min="1" required>
-    <button type="submit">Proceed to Payment</button>
-</form>
+<div class="container mt-5">
+    <h2>Checkout</h2>
+    {% if cart_items %}
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Price per Ticket</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.event.name }}</td>
+                    <td>${{ item.event.ticket_price }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.total_price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-right mt-4">
+            <h4>Total Payment: <strong>${{ total_value }}</strong></h4>
+        </div>
+        <form action="{% url 'stripe_payment' %}" method="POST" id="payment-form">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success btn-lg mt-3">Proceed to Payment</button>
+        </form>
+    {% else %}
+        <p>Your cart is empty. <a href="{% url 'browse_events' %}">Browse events</a> to add tickets.</p>
+    {% endif %}
+</div>
 {% endblock %}
