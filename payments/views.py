@@ -53,6 +53,10 @@ def stripe_payment(request):
         return render(request, 'payments/error.html', {'error': str(e)})
 
 def success(request):
+    # Clear the cart for the current user
+    if request.user.is_authenticated:
+        ShoppingCart.objects.filter(user=request.user).delete()
+
     return render(request, 'payments/success.html')
 
 def cancel(request):

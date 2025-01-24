@@ -2,8 +2,8 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1>Your Shopping Cart</h1>
     {% if cart_with_events %}
+        <h1>Your Shopping Cart</h1>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -53,99 +53,106 @@
             <a href="{% url 'checkout' %}" class="btn btn-success btn-lg">Checkout</a>
         </div>
     {% else %}
-        <p>Your cart is empty. <a href="{% url 'browse_events' %}">Browse events</a> to add tickets.</p>
+        <div class="empty-cart-message text-center" style="margin-top: 20%;">
+            <p>Your cart is empty. <a href="{% url 'browse_events' %}">Browse events</a> to add tickets.</p>
+        </div>
     {% endif %}
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Update ticket quantity in the cart
-    document.querySelectorAll('.update-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const cartItemId = this.getAttribute('data-cart-item-id');
-            const quantityInput = document.getElementById(`quantity-${cartItemId}`);
-            const newQuantity = quantityInput.value;
-            const feedback = document.querySelector(`.feedback-${cartItemId}`);
-
-            // Disable the button to prevent duplicate requests
-            button.disabled = true;
-
-            fetch(`/events/update-cart/${cartItemId}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({ quantity: newQuantity })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update the total for the item and cart dynamically
-                    document.getElementById(`item-total-${cartItemId}`).textContent = `${data.item_total}`;
-                    document.getElementById('total-cart-value').textContent = `${data.total_value}`;
-                    feedback.style.display = 'none'; // Clear any previous error feedback
-                } else {
-                    feedback.textContent = data.error || "Failed to update the cart.";
-                    feedback.style.display = 'block';
-                }
-            })
-            .catch(error => {
-                console.error("Error updating cart:", error);
-                feedback.textContent = "Network error. Please try again.";
-                feedback.style.display = 'block';
-            })
-            .finally(() => {
-                // Re-enable the button
-                button.disabled = false;
-            });
-        });
-    });
-
-    // Remove item from the cart
-    document.querySelectorAll('.remove-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const cartItemId = this.getAttribute('data-cart-item-id');
-
-            // Disable the button to prevent duplicate requests
-            button.disabled = true;
-
-            fetch(`/events/remove-from-cart/${cartItemId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Remove the item's row from the cart
-                    const row = document.getElementById(`cart-row-${cartItemId}`);
-                    if (row) row.remove();
-
-                    // Update the total value in the cart
-                    document.getElementById('total-cart-value').textContent = `${data.total_value}`;
-
-                    // Show the empty cart message if no items are left
-                    if (data.total_value === "0.00") {
-                        document.querySelector('.container').innerHTML = `
-                            <p>Your cart is empty. <a href="{% url 'browse_events' %}">Browse events</a> to add tickets.</p>
-                        `;
+    document.addEventListener('DOMContentLoaded', function () {
+        // Update ticket quantity in the cart
+        document.querySelectorAll('.update-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const cartItemId = this.getAttribute('data-cart-item-id');
+                const quantityInput = document.getElementById(`quantity-${cartItemId}`);
+                const newQuantity = quantityInput.value;
+                const feedback = document.querySelector(`.feedback-${cartItemId}`);
+    
+                // Disable the button to prevent duplicate requests
+                button.disabled = true;
+    
+                fetch(`/events/update-cart/${cartItemId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ quantity: newQuantity })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the total for the item and cart dynamically
+                        document.getElementById(`item-total-${cartItemId}`).textContent = `${data.item_total}`;
+                        document.getElementById('total-cart-value').textContent = `${data.total_value}`;
+                        feedback.style.display = 'none'; // Clear any previous error feedback
+                    } else {
+                        feedback.textContent = data.error || "Failed to update the cart.";
+                        feedback.style.display = 'block';
                     }
-                } else {
-                    alert(data.error || "Failed to remove the item.");
-                }
-            })
-            .catch(error => {
-                console.error("Error removing item from cart:", error);
-                alert("Network error. Please try again.");
-            })
-            .finally(() => {
-                // Re-enable the button
-                button.disabled = false;
+                })
+                .catch(error => {
+                    console.error("Error updating cart:", error);
+                    feedback.textContent = "Network error. Please try again.";
+                    feedback.style.display = 'block';
+                })
+                .finally(() => {
+                    // Re-enable the button
+                    button.disabled = false;
+                });
+            });
+        });
+    
+        // Remove item from the cart
+        document.querySelectorAll('.remove-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const cartItemId = this.getAttribute('data-cart-item-id');
+    
+                // Disable the button to prevent duplicate requests
+                button.disabled = true;
+    
+                fetch(`/events/remove-from-cart/${cartItemId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the item's row from the cart
+                        const row = document.getElementById(`cart-row-${cartItemId}`);
+                        if (row) row.remove();
+    
+                        // Update the total value in the cart
+                        document.getElementById('total-cart-value').textContent = `${data.total_value}`;
+    
+                        // Show the empty cart message and hide the cart table if no items are left
+                        if (data.total_value === "0.00") {
+                            const cartContainer = document.querySelector('.cart-container'); // Replace with your cart container class or ID
+                            if (cartContainer) cartContainer.style.display = 'none'; // Hide the cart table/container
+    
+                            document.querySelector('.container').innerHTML = `
+                                <div class="empty-cart-message text-center" style="margin-top: 20%;">
+                                    <p>Your cart is empty. <a href="{% url 'browse_events' %}">Browse events</a> to add tickets.</p>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        alert(data.error || "Failed to remove the item.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error removing item from cart:", error);
+                    alert("Network error. Please try again.");
+                })
+                .finally(() => {
+                    // Re-enable the button
+                    button.disabled = false;
+                });
             });
         });
     });
-});
-</script>
+    </script>      
 {% endblock %}
