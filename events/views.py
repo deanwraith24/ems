@@ -160,3 +160,13 @@ def view_cart(request):
         'cart_with_events': cart_with_events,
         'total_value': total_value
     })
+
+def delete_multiple_events(request):
+    if request.method == 'POST':
+        event_ids = request.POST.getlist('selected_events')
+        if event_ids:
+            Event.objects.filter(id__in=event_ids, user=request.user).delete()
+            messages.success(request, "Selected events deleted successfully.")
+        else:
+            messages.error(request, "No events selected.")
+    return redirect('dashboard')

@@ -3,27 +3,61 @@
 {% block content %}
 <div class="container mt-5">
     <h1 class="text-center mb-4">Your Events</h1>
-    <div class="d-flex justify-content-end mb-3">
-        <a href="{% url 'create_event' %}" class="btn btn-custom">Create New Event</a>
-    </div>
+
     {% if events|length > 0 %}
-    <div class="events-container">
-        {% for event in events %}
-        <div class="event-card">
-            <h2>{{ event.name }}</h2>
-            <p>{{ event.description }}</p>
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <a href="{% url 'edit_event' event.id %}" class="btn btn-custom">Edit</a>
-                <form method="post" action="{% url 'delete_event' event.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
-            </div>
+    <form method="post" action="{% url 'delete_multiple_events' %}">
+        {% csrf_token %}
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col"><input type="checkbox" id="select-all"></th>
+                    <th scope="col">Event Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Venue</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td><input type="checkbox" name="selected_events" value="{{ event.id }}" class="select-checkbox"></td>
+                    <td>{{ event.name }}</td>
+                    <td>{{ event.description }}</td>
+                    <td>{{ event.date }}</td>
+                    <td>{{ event.time }}</td>
+                    <td>{{ event.venue }}</td>
+                    <td>
+                        <a href="{% url 'edit_event' event.id %}" class="btn btn-sm btn-custom">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <a href="{% url 'create_event' %}" class="btn btn-custom">Create New Event</a>
+            <button type="submit" class="btn btn-danger">Delete Selected</button>
         </div>
-        {% endfor %}
-    </div>
+    </form>
     {% else %}
     <p class="text-center text-muted mt-4">You have no events. Start by creating one!</p>
+    <div class="d-flex justify-content-center">
+        <a href="{% url 'create_event' %}" class="btn btn-custom mt-3">Create New Event</a>
+    </div>
     {% endif %}
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectAllCheckbox = document.getElementById('select-all');
+        const checkboxes = document.querySelectorAll('.select-checkbox');
+
+        selectAllCheckbox.addEventListener('change', function () {
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        });
+    });
+</script>
 {% endblock %}
