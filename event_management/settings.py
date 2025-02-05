@@ -121,6 +121,8 @@ WSGI_APPLICATION = 'event_management.wsgi.application'
 STRIPE_TEST_PUBLIC_KEY = 'pk_test_51Qh9pYDWDnPFZKbeVhsEqG1Bdkrvd8Q2kdt2SBNEQLLBepBjUn1Djm4JvbCk64KXya23sNRbcr8KqL6rSnM7DIT900msNUTjZl'
 STRIPE_TEST_SECRET_KEY = 'sk_test_51Qh9pYDWDnPFZKbebEWgv0fYNhnUSX76aLhdWoPuraEnK0FZtZgpmATixNa6WFkXtmPMgLbnl5IJ2hgbLPXDzk4I00TLF8defe'
 
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
