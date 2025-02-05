@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
     '8000-deanwraith24-ems-y8qo2ikjh63.ws.codeinstitute-ide.net',
     '127.0.0.1',
     'localhost',
+    '.herokuapp.com',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
