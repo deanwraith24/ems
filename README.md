@@ -1,6 +1,6 @@
-# EMS
+# Eventopia
 
-[Link to live project](https://deanwraith24.github.io/ems/)
+[Link to live project](https://git.heroku.com/eventopia.git)
 
 ## Introduction
 
