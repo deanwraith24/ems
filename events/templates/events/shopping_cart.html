@@ -1,163 +1,46 @@
 {% extends 'users/base.html' %}
-
 {% block content %}
-<div class="container mt-5">
-    {% if cart_with_events %}
-        <h1>Your Shopping Cart</h1>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Event</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item, event in cart_with_events %}
-                <tr id="cart-row-{{ item.id }}">
-                    <td>{{ event.name }}</td>
-                    <td>
-                        <input 
-                            type="number" 
-                            id="quantity-{{ item.id }}" 
-                            value="{{ item.quantity }}" 
-                            min="1" 
-                            max="{{ event.ticket_quantity }}" 
-                            class="form-control d-inline-block" 
-                            style="width: 70px;"
-                        >
-                        <button 
-                            class="btn btn-primary btn-sm update-btn" 
-                            data-cart-item-id="{{ item.id }}"
-                        >
-                            Update
-                        </button>
-                        <div class="feedback feedback-{{ item.id }} text-danger mt-1" style="display: none;"></div>
-                    </td>
-                    <td>$<span id="item-total-{{ item.id }}">{{ item.total_price }}</span></td>
-                    <td>
-                        <button 
-                            class="btn btn-danger btn-sm remove-btn" 
-                            data-cart-item-id="{{ item.id }}"
-                        >
-                            Remove
-                        </button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="mt-4 text-right">
-            <h4>Total: $<span id="total-cart-value">{{ total_value }}</span></h4>
-            <a href="{% url 'checkout' %}" class="btn btn-success btn-lg">Checkout</a>
-        </div>
-    {% else %}
-        <div class="empty-cart-message text-center" style="margin-top: 20%;">
-            <p>Your cart is empty. <a href="{% url 'browse_events' %}">Browse events</a> to add tickets.</p>
-        </div>
-    {% endif %}
+<div class="container mt-4">
+<div class="row justify-content-center">
+<div class="col-md-10">
+{% if cart_with_events %}
+<h1>Your Shopping Cart</h1>
+<table class="table table-bordered table-striped text-center align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Event</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item, event in cart_with_events %}
+        <tr id="cart-row-{{ item.id }}">
+            <td>{{ event.name }}</td>
+            <td>
+                <input type="number" id="quantity-{{ item.id }}" value="{{ item.quantity }}" min="1" max="{{ event.ticket_quantity }}" class="form-control d-inline-block" style="width: 70px;">
+                <button class="btn btn-primary btn-sm update-btn" data-cart-item-id="{{ item.id }}">Update</button>
+                <div class="feedback feedback-{{ item.id }} text-danger mt-1" style="display: none;"></div>
+            </td>
+            <td>$<span id="item-total-{{ item.id }}">{{ item.total_price }}</span></td>
+            <td>
+                <button class="btn btn-danger btn-sm remove-btn" data-cart-item-id="{{ item.id }}">Remove</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="text-end mt-4">
+    <h4>Total: $<span id="total-cart-value">{{ total_value }}</span></h4>
+    <a href="{% url 'checkout' %}" class="btn btn-success btn-lg">Checkout</a>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const updateNavbarCartCount = (count) => {
-            document.getElementById('cart-count').textContent = count;
-        };
-
-        // Update ticket quantity in the cart
-        document.querySelectorAll('.update-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const cartItemId = this.getAttribute('data-cart-item-id');
-                const quantityInput = document.getElementById(`quantity-${cartItemId}`);
-                const newQuantity = quantityInput.value;
-                const feedback = document.querySelector(`.feedback-${cartItemId}`);
-
-                // Disable the button to prevent duplicate requests
-                button.disabled = true;
-
-                fetch(`/events/update-cart/${cartItemId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify({ quantity: newQuantity })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Update the total for the item and cart dynamically
-                        document.getElementById(`item-total-${cartItemId}`).textContent = `${data.item_total}`;
-                        document.getElementById('total-cart-value').textContent = `${data.total_value}`;
-                        updateNavbarCartCount(data.cart_count);
-                        feedback.style.display = 'none'; // Clear any previous error feedback
-                    } else {
-                        feedback.textContent = data.error || "Failed to update the cart.";
-                        feedback.style.display = 'block';
-                    }
-                })
-                .catch(error => {
-                    console.error("Error updating cart:", error);
-                    feedback.textContent = "Network error. Please try again.";
-                    feedback.style.display = 'block';
-                })
-                .finally(() => {
-                    // Re-enable the button
-                    button.disabled = false;
-                });
-            });
-        });
-
-        // Remove item from the cart
-        document.querySelectorAll('.remove-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const cartItemId = this.getAttribute('data-cart-item-id');
-
-                // Disable the button to prevent duplicate requests
-                button.disabled = true;
-
-                fetch(`/events/remove-from-cart/${cartItemId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Remove the item's row from the cart
-                        const row = document.getElementById(`cart-row-${cartItemId}`);
-                        if (row) row.remove();
-
-                        // Update the total value in the cart
-                        document.getElementById('total-cart-value').textContent = `${data.total_value}`;
-                        updateNavbarCartCount(data.cart_count);
-
-                        // Show the empty cart message and hide the cart table if no items are left
-                        if (data.total_value === "0.00") {
-                            document.querySelector('.container').innerHTML = `
-                                <div class="empty-cart-message text-center" style="margin-top: 20%;">
-                                    <p>Your cart is empty. <a href="{% url 'browse_events' %}">Browse events</a> to add tickets.</p>
-                                </div>
-                            `;
-                        }
-                    } else {
-                        alert(data.error || "Failed to remove the item.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error removing item from cart:", error);
-                    alert("Network error. Please try again.");
-                })
-                .finally(() => {
-                    // Re-enable the button
-                    button.disabled = false;
-                });
-            });
-        });
-    });
-</script>
+{% else %}
+<div class="text-center mt-5">
+    <p>Your cart is empty. <a href="{% url 'browse_events' %}">Browse events</a> to add tickets.</p>
+</div>
+{% endif %}
+</div>
+</div>
+</div>
 {% endblock %}

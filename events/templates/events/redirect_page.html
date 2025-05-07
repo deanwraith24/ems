@@ -1,12 +1,16 @@
 {% extends 'users/base.html' %}
-
 {% block title %}Choose Action{% endblock %}
-
 {% block content %}
+<div class="container mt-4">
+<div class="row justify-content-center">
+<div class="col-md-10 text-center">
 <h1>Welcome, {{ user.username }}</h1>
-<p>What would you like to do?</p>
-<div class="actions">
-    <a href="{% url 'dashboard' %}" class="btn">Event Dashboard</a>
-    <a href="{% url 'browse_events' %}" class="btn">Browse Events</a>
+<p class="mb-4">What would you like to do?</p>
+<div class="d-flex flex-column gap-3 align-items-center">
+    <a href="{% url 'dashboard' %}" class="btn btn-custom w-50">Event Dashboard</a>
+    <a href="{% url 'browse_events' %}" class="btn btn-outline-primary w-50">Browse Events</a>
+</div>
+</div>
+</div>
 </div>
 {% endblock %}
