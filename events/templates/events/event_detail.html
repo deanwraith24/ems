@@ -1,3 +1,5 @@
+{% extends 'events/base.html' %}
+{% block content %}
 {% extends 'users/base.html' %}
 
 {% block content %}
@@ -57,4 +59,5 @@
         totalCostDisplay.textContent = (quantity * ticketPrice).toFixed(2);
     });
 </script>
+{% endblock %}
 {% endblock %}

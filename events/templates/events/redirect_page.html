@@ -1,3 +1,5 @@
+{% extends 'events/base.html' %}
+{% block content %}
 {% extends 'users/base.html' %}
 
 {% block title %}Choose Action{% endblock %}
@@ -9,4 +11,5 @@
     <a href="{% url 'dashboard' %}" class="btn">Event Dashboard</a>
     <a href="{% url 'browse_events' %}" class="btn">Browse Events</a>
 </div>
+{% endblock %}
 {% endblock %}

@@ -2,6 +2,13 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('profile/', views.user_profile, name='user_profile'),
+
+
+    path('upcoming-events/', views.upcoming_events, name='upcoming_events'),
+    path('past-events/', views.past_events, name='past_events'),
+    path('purchase/<int:event_id>/', views.purchase_ticket, name='purchase_ticket'),
+
     path('redirect/', views.redirect_page, name='redirect_page'),  # Selection page
     path('browse/', views.browse_events, name='browse_events'),
     path('dashboard/', views.dashboard, name='dashboard'),

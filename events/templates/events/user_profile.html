@@ -1,0 +1,34 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <h2>My Profile</h2>
+
+    <h3>Upcoming Events</h3>
+    {% if upcoming_purchases %}
+      <ul>
+        {% for item in upcoming_purchases %}
+          <li>
+            <strong>{{ item.event.name }}</strong> on {{ item.event.date }} at {{ item.event.venue }} - {{ item.quantity }} ticket(s)
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>You have no upcoming events.</p>
+    {% endif %}
+
+    <h3>Past Events</h3>
+    {% if past_purchases %}
+      <ul>
+        {% for item in past_purchases %}
+          <li>
+            <strong>{{ item.event.name }}</strong> was on {{ item.event.date }} at {{ item.event.venue }} - {{ item.quantity }} ticket(s)
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>You have no past events.</p>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ShoppingCart, Event
@@ -170,3 +171,52 @@ def delete_multiple_events(request):
         else:
             messages.error(request, "No events selected.")
     return redirect('dashboard')
+
+@login_required
+def purchase_ticket(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    if event.date < datetime.today().date():
+        messages.error(request, "Cannot purchase tickets for past events.")
+        return redirect('event_list')
+
+    if event.ticket_quantity <= 0:
+        messages.error(request, "Tickets for this event are sold out.")
+        return redirect('event_list')
+
+    # Simulate a successful payment logic here
+    event.ticket_quantity -= 1
+    event.save()
+    messages.success(request, "Ticket purchased successfully!")
+    return redirect('event_list')
+
+
+@login_required
+def upcoming_events(request):
+    upcoming = Event.objects.filter(date__gte=datetime.today()).order_by('date')
+    return render(request, 'events/upcoming_events.html', {'events': upcoming})
+
+
+@login_required
+def past_events(request):
+    past = Event.objects.filter(date__lt=datetime.today()).order_by('-date')
+    return render(request, 'events/past_events.html', {'events': past})
+
+
+@login_required
+def user_profile(request):
+    purchases = ShoppingCart.objects.filter(user=request.user).select_related('event')
+    past = []
+    upcoming = []
+    today = datetime.today().date()
+
+    for item in purchases:
+        if item.event.date < today:
+            past.append(item)
+        else:
+            upcoming.append(item)
+
+    context = {
+        'past_purchases': past,
+        'upcoming_purchases': upcoming
+    }
+    return render(request, 'events/user_profile.html', context)
