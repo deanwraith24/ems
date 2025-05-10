@@ -3,7 +3,7 @@
 
 A full-stack Django web application that allows users to browse, create, and purchase tickets for events.
 
-[Live Site](https://eventopia.herokuapp.com)
+[Live Site](https://eventopia-4ecefd3eb4a9.herokuapp.com/)
 
 ---
 
