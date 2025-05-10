@@ -1,66 +1,66 @@
 {% extends 'events/base.html' %}
 {% block content %}
 {% extends 'users/base.html' %}
-
 {% block content %}
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Your Events</h1>
-
-    {% if events|length > 0 %}
-    <form method="post" action="{% url 'delete_multiple_events' %}">
-        {% csrf_token %}
-        <table class="table table-bordered">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col"><input type="checkbox" id="select-all"></th>
-                    <th scope="col">Event Name</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Venue</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for event in events %}
-                <tr>
-                    <td><input type="checkbox" name="selected_events" value="{{ event.id }}" class="select-checkbox"></td>
-                    <td>{{ event.name }}</td>
-                    <td>{{ event.description }}</td>
-                    <td>{{ event.date }}</td>
-                    <td>{{ event.time }}</td>
-                    <td>{{ event.venue }}</td>
-                    <td>
-                        <a href="{% url 'edit_event' event.id %}" class="btn btn-sm btn-custom">Edit</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="d-flex justify-content-between align-items-center mt-3">
-            <a href="{% url 'create_event' %}" class="btn btn-custom">Create New Event</a>
-            <button type="submit" class="btn btn-danger">Delete Selected</button>
-        </div>
-    </form>
-    {% else %}
-    <p class="text-center text-muted mt-4">You have no events. Start by creating one!</p>
-    <div class="d-flex justify-content-center">
-        <a href="{% url 'create_event' %}" class="btn btn-custom mt-3">Create New Event</a>
+<div class="container mt-4">
+<div class="row justify-content-center">
+<div class="col-md-10">
+<h1 class="text-center mb-4">Your Events</h1>
+{% if events|length > 0 %}
+<form method="post" action="{% url 'delete_multiple_events' %}">
+    {% csrf_token %}
+    <table class="table table-striped table-bordered align-middle text-center">
+        <thead class="table-dark">
+            <tr>
+                <th><input type="checkbox" id="select-all"></th>
+                <th>Event Name</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Venue</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <td><input type="checkbox" name="selected_events" value="{{ event.id }}" class="select-checkbox"></td>
+                <td>{{ event.name }}</td>
+                <td>{{ event.description }}</td>
+                <td>{{ event.date }}</td>
+                <td>{{ event.time }}</td>
+                <td>{{ event.venue }}</td>
+                <td>
+                    <a href="{% url 'edit_event' event.id %}" class="btn btn-sm btn-custom">Edit</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-between mt-3">
+        <a href="{% url 'create_event' %}" class="btn btn-custom">Create New Event</a>
+        <button type="submit" class="btn btn-danger">Delete Selected</button>
     </div>
-    {% endif %}
+</form>
+{% else %}
+<p class="text-center text-muted">You have no events. Start by creating one!</p>
+<div class="text-center mt-3">
+    <a href="{% url 'create_event' %}" class="btn btn-custom">Create New Event</a>
+</div>
+{% endif %}
+</div>
+</div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const selectAllCheckbox = document.getElementById('select-all');
-        const checkboxes = document.querySelectorAll('.select-checkbox');
-
-        selectAllCheckbox.addEventListener('change', function () {
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = selectAllCheckbox.checked;
-            });
-        });
+document.addEventListener('DOMContentLoaded', function () {
+    const selectAll = document.getElementById('select-all');
+    const checkboxes = document.querySelectorAll('.select-checkbox');
+    selectAll.addEventListener('change', () => {
+        checkboxes.forEach(cb => cb.checked = selectAll.checked);
     });
+});
 </script>
+{% endblock %}
 {% endblock %}
 {% endblock %}

@@ -1,64 +1,49 @@
 {% extends 'events/base.html' %}
 {% block content %}
 {% extends 'users/base.html' %}
-
 {% block content %}
-<div class="container mt-5">
-    {% if cart_with_events %}
-        <h1>Your Shopping Cart</h1>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Event</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item, event in cart_with_events %}
-                <tr id="cart-row-{{ item.id }}">
-                    <td>{{ event.name }}</td>
-                    <td>
-                        <input 
-                            type="number" 
-                            id="quantity-{{ item.id }}" 
-                            value="{{ item.quantity }}" 
-                            min="1" 
-                            max="{{ event.ticket_quantity }}" 
-                            class="form-control d-inline-block" 
-                            style="width: 70px;"
-                        >
-                        <button 
-                            class="btn btn-primary btn-sm update-btn" 
-                            data-cart-item-id="{{ item.id }}"
-                        >
-                            Update
-                        </button>
-                        <div class="feedback feedback-{{ item.id }} text-danger mt-1" style="display: none;"></div>
-                    </td>
-                    <td>$<span id="item-total-{{ item.id }}">{{ item.total_price }}</span></td>
-                    <td>
-                        <button 
-                            class="btn btn-danger btn-sm remove-btn" 
-                            data-cart-item-id="{{ item.id }}"
-                        >
-                            Remove
-                        </button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="mt-4 text-right">
-            <h4>Total: $<span id="total-cart-value">{{ total_value }}</span></h4>
-            <a href="{% url 'checkout' %}" class="btn btn-success btn-lg">Checkout</a>
-        </div>
-    {% else %}
-        <div class="empty-cart-message text-center" style="margin-top: 20%;">
-            <p>Your cart is empty. <a href="{% url 'browse_events' %}">Browse events</a> to add tickets.</p>
-        </div>
-    {% endif %}
+<div class="container mt-4">
+<div class="row justify-content-center">
+<div class="col-md-10">
+{% if cart_with_events %}
+<h1>Your Shopping Cart</h1>
+<table class="table table-bordered table-striped text-center align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Event</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item, event in cart_with_events %}
+        <tr id="cart-row-{{ item.id }}">
+            <td>{{ event.name }}</td>
+            <td>
+                <input type="number" id="quantity-{{ item.id }}" value="{{ item.quantity }}" min="1" max="{{ event.ticket_quantity }}" class="form-control d-inline-block" style="width: 70px;">
+                <button class="btn btn-primary btn-sm update-btn" data-cart-item-id="{{ item.id }}">Update</button>
+                <div class="feedback feedback-{{ item.id }} text-danger mt-1" style="display: none;"></div>
+            </td>
+            <td>$<span id="item-total-{{ item.id }}">{{ item.total_price }}</span></td>
+            <td>
+                <button class="btn btn-danger btn-sm remove-btn" data-cart-item-id="{{ item.id }}">Remove</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="text-end mt-4">
+    <h4>Total: $<span id="total-cart-value">{{ total_value }}</span></h4>
+    <a href="{% url 'checkout' %}" class="btn btn-success btn-lg">Checkout</a>
+</div>
+{% else %}
+<div class="text-center mt-5">
+    <p>Your cart is empty. <a href="{% url 'browse_events' %}">Browse events</a> to add tickets.</p>
+</div>
+{% endif %}
+</div>
+</div>
 </div>
 {% endblock %}
 
@@ -162,5 +147,6 @@
         });
     });
 </script>
+{% endblock %}
 {% endblock %}
 {% endblock %}

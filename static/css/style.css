@@ -49,4 +49,65 @@ footer {
 
 .card-body {
     padding: 1rem;
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    .navbar {
+        padding: 0.8rem 1rem;
+    }
+    .events-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .event-card {
+        width: 90%;
+    }
+    .container {
+        padding: 1rem;
+    }
+}
+
+/* Ensure footer stays at the bottom when content is short */
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Enhance alert dismiss button position */
+.alert .btn-close {
+    float: right;
+}
+
+/* Maintain readability over dark backgrounds */
+.footer a {
+    color: #f9f5f1;
+}
+
+.footer a:hover {
+    color: #cbb59e;
+    text-decoration: underline;
+}
+
+/* For tables inside dashboards */
+.table th, .table td {
+    vertical-align: middle;
+    text-align: center;
+}
+
+/* Responsive navbar spacing */
+@media (max-width: 768px) {
+    .navbar-nav .nav-link {
+        padding: 0.5rem 1rem;
+        text-align: center;
+    }
 }
